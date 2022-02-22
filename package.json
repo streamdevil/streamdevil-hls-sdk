@@ -1,0 +1,25 @@
+{
+  "name": "streamdevil-hls-sdk",
+  "version": "1.2.9",
+  "description": "StreamDevil HLS SDK for JavaScript ",
+  "main": "streamdevil-hls-sdk.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:streamdevil/streamdevil-hls-sdk.git"
+  },
+  "keywords": [
+    "streamdevil",
+    "hls",
+    "sdk",
+    "video",
+    "streaming",
+    "p2p",
+    "peer-2-peer"
+  ],
+  "author": "StreamDevil",
+  "license": "ISC",
+  "homepage": "https://github.com/streamdevil/streamdevil-hls-sdk"
+}

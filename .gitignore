@@ -1,0 +1,10 @@
+dist
+lib
+node_modules
+tmp
+*.sublime-project
+*.sublime-workspace
+.vscode
+.idea
+*.iml
+js

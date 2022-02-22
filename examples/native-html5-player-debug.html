@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>P2P - Native HTML5 Player</title>
+    <script src="../streamdevil-hls-sdk.js"></script>
+</head>
+<body>
+<video muted autoplay controls width="600" id="video"></video>
+<p>
+<a href="" target="_blank">Open New Peer</a>
+<div id="stats"></div>
+<div id="peerLog"></div>
+<script>
+    var videoElment = document.getElementById('video');
+    var statsElment = document.getElementById('stats');
+    var peerLogElment = document.getElementById('peerLog');
+
+    var videoSrcUrl = 'https://wowza.peer5.com/live/smil:bbb_abr.smil/playlist.m3u8'
+    var streamDevil = new StreamDevil({
+        apiKey: 'stream-devil-demo-api-key'
+    });
+
+    var downloadTotals = {http: 0, p2p: 0};
+    var uploadTotal = 0;
+    function init() {
+        if (streamDevil.isSupported()) {
+            var hls = streamDevil.getNewHlsInstance();
+            hls.loadSource(videoSrcUrl);
+            hls.attachMedia(videoElment);
+
+            streamDevil.engine.on(streamDevil.events.PieceBytesDownloaded, onBytesDownloaded);
+            streamDevil.engine.on(streamDevil.events.PieceBytesUploaded, onBytesUploaded);
+            streamDevil.engine.on(streamDevil.events.PeerConnect, onPeerConnect);
+
+        }
+    }
+
+    function onPeerConnect(peer) {
+        peerLogElment.innerHTML += 'peer connected: ' + peer.id + '<br />';
+    }
+
+    function onBytesDownloaded(method, size) {
+        downloadTotals[method] += size;
+    }
+
+    function onBytesUploaded(method, size) {
+        uploadTotal += size;
+    }
+
+    setInterval(()=>{
+        statsElment.innerHTML = `Uploaded: ${uploadTotal} <br /> Downloaded http: ${downloadTotals.http} <br />  Downloaed p2p: ${downloadTotals.p2p} `
+    }, 200)
+
+    init()
+</script>
+</body>
+</html>

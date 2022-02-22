@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>P2P - Native HTML5 Player</title>
+    <script src="../streamdevil-hls-sdk.js"></script>
+</head>
+<body>
+<video muted autoplay controls width="600" id="video"></video>
+<script>
+    var videoSrcUrl = 'https://wowza.peer5.com/live/smil:bbb_abr.smil/playlist.m3u8'
+    var streamDevil = new StreamDevil({
+        apiKey: 'stream-devil-demo-api-key'
+    });
+
+    function init() {
+        var videoElment = document.getElementById('video');
+        if (!streamDevil.isSupported()){
+            // fallback to simple player
+            console.log('StreamDevil not supported...');
+            return;
+        }
+        var hls = streamDevil.getNewHlsInstance();
+        hls.loadSource(videoSrcUrl);
+        hls.attachMedia(videoElment);
+    }
+
+    init()
+</script>
+</body>
+</html>

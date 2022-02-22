@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>P2P - Native HTML5 Player - Live&VoD - with resolution dropdown</title>
+    <script src="../streamdevil-hls-sdk.js"></script>
+</head>
+<body>
+<div id="video-container"></div>
+<script>
+     var videoSrc = 'https://wowza.peer5.com/live/smil:bbb_abr.smil/playlist.m3u8'
+     var streamDevil = new StreamDevil({
+         apiKey: 'stream-devil-demo-api-key'
+     });
+
+     function init() {
+        var videoContainer = document.getElementById('video-container');
+
+        console.log('Is StreamDevil supported: ' + streamDevil.isSupported())
+
+        var video = document.createElement("video");
+        video.id = "video";
+        video.volume = 0;
+        video.setAttribute("width", "600");
+        video.setAttribute("playsinline", "");
+        video.setAttribute("muted", "");
+        video.setAttribute("autoplay", "");
+        video.setAttribute("controls", "");
+        videoContainer.appendChild(video);
+
+        var level = document.createElement("select");
+        level.id = "level";
+        videoContainer.appendChild(level);
+
+        var hls = streamDevil.getNewHlsInstance();
+
+        hls.loadSource(videoSrc);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            hlsLevelSwitcher.init(hls, level);
+        });
+    }
+
+
+    var hlsLevelSwitcher = {
+        auto: "Auto",
+        hls: undefined,
+        select: undefined,
+
+        init: function (hls, select) {
+            if (hls.levelController.levels.length < 2) {
+                select.style.display = "none";
+                return;
+            } else {
+                select.style.display = "block";
+            }
+
+            this.hls = hls;
+            this.select = select;
+
+            this._clearOptions();
+            this._addOption(this.auto);
+            hls.levelController.levels.forEach((e, i) => {
+                var name = [];
+                if (e.height) {
+                    name.push(e.height + "p");
+                }
+                if (e.bitrate) {
+                    name.push(Math.round(e.bitrate / 1000) + "k");
+                }
+                if (name.length === 0) {
+                    name.push("Quality #" + i);
+                }
+                this._addOption(name.join(" / "), i);
+            });
+
+            hls.on(Hls.Events.LEVEL_SWITCHED, this._hlsLevelSwitch.bind(this));
+
+            this.select.addEventListener("change", (event) => {
+                hls.nextLevel = event.target.selectedIndex - 1;
+                this._hlsLevelSwitch();
+            });
+        },
+
+        _hlsLevelSwitch: function () {
+            var auto = this.select.querySelector("option:not([data-index])");
+            var curr = this.select.querySelector(
+                "option[data-index='" + this.hls.currentLevel + "']"
+            );
+            if (this.hls.autoLevelEnabled || this.hls.currentLevel === -1) {
+                auto.selected = true;
+                auto.text = curr ? curr.text + " (" + this.auto + ")" : this.auto;
+            } else {
+                curr.selected = true;
+                auto.text = this.auto;
+            }
+        },
+
+        _clearOptions: function () {
+            while (this.select.options.length) {
+                this.select.remove(0);
+            }
+        },
+
+        _addOption: function (text, index) {
+            var option = document.createElement("option");
+            option.text = text;
+            if (index !== undefined) {
+                option.dataset.index = index;
+            }
+            this.select.add(option);
+        },
+    };
+
+     init()
+</script>
+</body>
+</html>
