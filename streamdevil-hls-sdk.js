@@ -73,3 +73,5 @@ class StreamDevil {
         return hls;
     }
 }
+
+module.exports = StreamDevil;
