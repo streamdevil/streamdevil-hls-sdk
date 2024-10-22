@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+    <!-- Include Hls.js library from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@~1/dist/hls.min.js"></script>
+
+    <!-- Import map for P2P Media Loader modules -->
+    <script type="importmap">
+        {
+          "imports": {
+            "p2p-media-loader-core": "https://cdn.jsdelivr.net/npm/p2p-media-loader-core@2.0.1/dist/p2p-media-loader-core.es.min.js",
+            "p2p-media-loader-hlsjs": "https://cdn.jsdelivr.net/npm/p2p-media-loader-hlsjs@2.0.1/dist/p2p-media-loader-hlsjs.es.min.js"
+          }
+        }
+    </script>
+
+
+    <script type="module">
+        import { HlsJsP2PEngine } from "p2p-media-loader-hlsjs";
+
+        const statsElement = document.querySelector("#stats");
+        const peerLogElement = document.querySelector("#peerLog");
+        const videoElement = document.querySelector("#video");
+
+        const streamUrl = 'https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.DmumNckWFTqz.m3u8'
+        const HlsWithP2P = HlsJsP2PEngine.injectMixin(window.Hls);
+
+        const hls = new HlsWithP2P({
+            p2p: {
+                core: {
+                    swarmId: "Optional custom swarm ID for stream",
+                    announceTrackers: [
+                        "wss://ts1.srv2.nomo.hu"
+                    ],
+                    // Other P2P engine config parameters go here
+                },
+                onHlsJsCreated(hls) {
+                    //console.log('Hls.js instance created', hls);
+                    // hls.p2pEngine.addEventListener("onPeerConnect", onPeerConnect);
+                    // hls.p2pEngine.addEventListener("onChunkDownloaded", onBytesDownloaded);
+                    // hls.p2pEngine.addEventListener("onChunkUploaded", onBytesUploaded);
+                },
+            },
+        });
+
+        hls.p2pEngine.addEventListener("onPeerConnect", onPeerConnect);
+        hls.p2pEngine.addEventListener("onChunkDownloaded", onBytesDownloaded);
+        hls.p2pEngine.addEventListener("onChunkUploaded", onBytesUploaded);
+
+        hls.attachMedia(videoElement);
+        hls.loadSource(streamUrl);
+
+
+        let downloadTotals = {http: 0, p2p: 0};
+        let uploadTotal = 0;
+        function onPeerConnect(peer) {
+            peerLogElement.innerHTML += 'peer connected: ' + peer.peerId + '<br />';
+        }
+
+        function onBytesDownloaded(size, method) {
+            downloadTotals[method] += size;
+        }
+
+        function onBytesUploaded(size) {
+            uploadTotal += size;
+        }
+
+        setInterval(()=>{
+            statsElement.innerHTML = `Uploaded: ${uploadTotal} <br /> Downloaded http: ${downloadTotals.http} <br />  Downloaed p2p: ${downloadTotals.p2p} `
+        }, 200)
+    </script>
+</head>
+
+<body>
+<div style="width: 800px">
+    <video muted autoplay controls width="600" id="video"></video>
+    <p>
+        <a href="" target="_blank">Open New Peer</a>
+    <div id="stats"></div>
+    <div id="peerLog"></div>
+</div>
+</body>
+</html>

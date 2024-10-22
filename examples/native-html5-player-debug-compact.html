@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>P2P - Native HTML5 Player</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@0.14.17"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p2p-media-loader-core@0.6.2/build/p2p-media-loader-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p2p-media-loader-hlsjs@0.6.2/build/p2p-media-loader-hlsjs.min.js"></script>
+    <script>
+        class StreamDevil {
+            engineDefaultConfig = {
+                loader: {
+                    trackerAnnounce: [
+                        'wss://ts1.srv2.nomo.hu'
+                    ]
+                },
+            };
+            constructor(config) {
+                this.config =  config || {};
+                this.config.engine = this.config.engine || this.engineDefaultConfig;
+
+                this.events = {
+                    PieceBytesDownloaded: p2pml.core.Events.PieceBytesDownloaded,
+                    PieceBytesUploaded: p2pml.core.Events.PieceBytesUploaded,
+                    PeerConnect: p2pml.core.Events.PeerConnect,
+                    PeerClose: p2pml.core.Events.PeerClose
+                }
+
+                if (!window.p2pml){
+                    console.log('StreamDevil dependency not loaded: p2pml');
+                    return;
+                }
+
+                if (!window.Hls){
+                    console.log('StreamDevil dependency not loaded: Hls');
+                    return;
+                }
+
+                if (!window.p2pml.hlsjs){
+                    console.log('StreamDevil dependency not loaded: hlsjs p2p');
+                    return;
+                }
+
+                this.isP2PSupported = p2pml.core.HybridLoader.isSupported();
+                this.isHLSSupported = Hls.isSupported();
+
+                this.engine = this.isP2PSupported ? new p2pml.hlsjs.Engine(this.config.engine) : undefined;
+
+            }
+
+            getTrackers() {
+                return this.engine.getSettings().loader.trackerAnnounce;
+            }
+
+            isSupported(){
+                return this.isP2PSupported && this.isHLSSupported
+            }
+
+            getNewHlsInstance(config) {
+                if (!this.isHLSSupported){
+                    return;
+                }
+
+                let hlsConfig = config || {};
+                if (!hlsConfig.liveSyncDurationCount){
+                    hlsConfig.liveSyncDurationCount = 7;
+                }
+                hlsConfig.loader = this.isP2PSupported ? this.engine.createLoaderClass() : Hls.DefaultConfig.loader;
+
+                let hls = new Hls(hlsConfig);
+
+                if (this.isP2PSupported) {
+                    p2pml.hlsjs.initHlsJsPlayer(hls);
+                }
+
+                return hls;
+            }
+        }
+
+
+
+    </script>
+</head>
+<body>
+<video muted autoplay controls width="600" id="video"></video>
+<p>
+<a href="" target="_blank">Open New Peer</a>
+<div id="stats"></div>
+<div id="peerLog"></div>
+<script>
+    var videoElement = document.getElementById('video');
+    var statsElement = document.getElementById('stats');
+    var peerLogElement = document.getElementById('peerLog');
+
+    var videoSrcUrl = 'https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.DmumNckWFTqz.m3u8'
+    var streamDevil = new StreamDevil({
+        apiKey: 'stream-devil-demo-api-key'
+    });
+
+    var downloadTotals = {http: 0, p2p: 0};
+    var uploadTotal = 0;
+    function init() {
+        if (streamDevil.isSupported()) {
+            var hls = streamDevil.getNewHlsInstance({
+                maxBufferSize: 0,
+                maxBufferLength: 10,
+                liveSyncDurationCount: 10,
+            });
+            hls.loadSource(videoSrcUrl);
+            hls.attachMedia(videoElement);
+
+            streamDevil.engine.on(streamDevil.events.PieceBytesDownloaded, onBytesDownloaded);
+            streamDevil.engine.on(streamDevil.events.PieceBytesUploaded, onBytesUploaded);
+            //streamDevil.engine.on(streamDevil.events.PeerConnect, onPeerConnect);
+
+        }
+    }
+
+    function onPeerConnect(peer) {
+        peerLogElement.innerHTML += 'peer connected: ' + peer.id + '<br />';
+    }
+
+    function onBytesDownloaded(method, size) {
+        downloadTotals[method] += size;
+    }
+
+    function onBytesUploaded(method, size) {
+        uploadTotal += size;
+    }
+
+    setInterval(()=>{
+        statsElement.innerHTML = `Uploaded: ${uploadTotal} <br /> Downloaded http: ${downloadTotals.http} <br />  Downloaed p2p: ${downloadTotals.p2p} `
+    }, 200)
+
+    init()
+</script>
+</body>
+</html>
