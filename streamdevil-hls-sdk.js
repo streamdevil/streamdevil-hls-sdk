@@ -74,4 +74,4 @@ class StreamDevil {
     }
 }
 
-module.exports = StreamDevil;
+//module.exports = StreamDevil;
