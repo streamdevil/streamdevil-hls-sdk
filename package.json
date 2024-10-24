@@ -1,8 +1,8 @@
 {
   "name": "streamdevil-hls-sdk",
-  "version": "1.3.9",
+  "version": "2.4.1",
   "description": "StreamDevil HLS SDK for JavaScript ",
-  "main": "streamdevil-hls-sdk.js",
+  "main": "src/stream-devil-hls-sdk.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,5 +21,9 @@
   ],
   "author": "StreamDevil",
   "license": "ISC",
-  "homepage": "https://github.com/streamdevil/streamdevil-hls-sdk"
+  "homepage": "https://github.com/streamdevil/streamdevil-hls-sdk",
+  "dependencies": {
+    "hls.js": "~1.5.7",
+    "p2p-media-loader-hlsjs": "~2.0.1"
+  }
 }
