@@ -3,52 +3,27 @@ StreamDevilHlsSdk HLS SDK for JavaScript
 
 StreamDevilHlsSdk provides an intelligent peer-assisted streaming infrastructure on top of your existing CDN. It radically reduces your CDN bandwidth and allows you to serve the highest video quality at lower cost.
 
-## Basic Integration Example
+## Use with npm
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>P2P - Native HTML5 Player</title>
-    <script type="importmap">
-        {
-          "imports": {
-            "hls.js": "https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.mjs",
-            "p2p-media-loader-core": "https://cdn.jsdelivr.net/npm/p2p-media-loader-core@2.0.1/dist/p2p-media-loader-core.es.min.js",
-            "p2p-media-loader-hlsjs": "https://cdn.jsdelivr.net/npm/p2p-media-loader-hlsjs@2.0.1/dist/p2p-media-loader-hlsjs.es.min.js",
-            "streamdevil-hls-sdk": "../stream-devil-hls-sdk.js"
-          }
-        }
-    </script>
-    <script type="module">
-        import {StreamDevilHlsSdk} from "stream-devil-hls-sdk";
+### Install
 
-        const videoSrcUrl = 'https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.DmumNckWFTqz.m3u8';
-        const videoElement = document.getElementById('video');
-        const streamDevil = new StreamDevilHlsSdk({
-            apiKey: 'stream-devil-demo-api-key'
-        });
-
-        function init() {
-            if (!streamDevil.isSupported()) {
-                // fallback to simple player
-                console.log('StreamDevilHlsSdk not supported...');
-                return;
-            }
-            const hls = streamDevil.getNewHlsInstance();
-            hls.loadSource(videoSrcUrl);
-            hls.attachMedia(videoElement);
-        }
-
-        init()
-    </script>
-</head>
-<body>
-<video muted autoplay controls width="600" id="video"></video>
-</body>
-</html>
+```bash
+npm install --save github:streamdevil/streamdevil-hls-sdk#2.5.2
 ```
+
+### Usage in code
+
+```javascript
+import {StreamDevilHlsSdk} from 'streamdevil-hls-sdk';
+
+const videoSrcUrl = 'https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.DmumNckWFTqz.m3u8';
+const videoElement = document.getElementById('video');
+
+const streamDevil = new StreamDevilHlsSdk();
+const hls = streamDevil.getNewHlsInstance();
+hls.loadSource(videoSrcUrl);
+hls.attachMedia(videoElement);
+``` 
 
 ## Integration Examples
 
