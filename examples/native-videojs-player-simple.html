@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+    <title>P2P - VideoJS Player - debug</title>
+
+    <link href="https://vjs.zencdn.net/8.16.1/video-js.css" rel="stylesheet" />
+    <script src="https://vjs.zencdn.net/8.16.1/video.min.js"></script>
+    <script type="importmap">
+        {
+          "imports": {
+            "hls.js": "https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.mjs",
+            "p2p-media-loader-core": "https://cdn.jsdelivr.net/npm/p2p-media-loader-core@2.0.1/dist/p2p-media-loader-core.es.min.js",
+            "p2p-media-loader-hlsjs": "https://cdn.jsdelivr.net/npm/p2p-media-loader-hlsjs@2.0.1/dist/p2p-media-loader-hlsjs.es.min.js",
+            "video.js": "https://cdn.jsdelivr.net/npm/video.js@8.16.1/dist/video.es.js",
+            "streamdevil-hls-sdk": "../src/stream-devil-hls-sdk.js"
+          }
+        }
+    </script>
+    <script type="module">
+        import { StreamDevilHlsSdk } from "streamdevil-hls-sdk";
+
+        const videoElement = document.querySelector("#video");
+        const streamUrl = 'https://fcc3ddae59ed.us-west-2.playback.live-video.net/api/video/v1/us-west-2.893648527354.channel.DmumNckWFTqz.m3u8';
+        const streamDevil = new StreamDevilHlsSdk();
+
+        function init() {
+            if (!streamDevil.isSupported()){
+                // TODO: fallback to simple player
+                console.log('StreamDevil is not supported');
+                return;
+            }
+
+            const hls = streamDevil.getNewHlsInstance();
+            hls.attachMedia(videoElement);
+            hls.loadSource(streamUrl);
+
+            const player = videojs(videoElement);
+        }
+
+        init();
+    </script>
+</head>
+<body>
+<div style="width: 800px">
+    <video class="video-js vjs-live vjs-liveui" muted autoplay controls width="600" id="video"></video>
+</div>
+</body>
+</html>
