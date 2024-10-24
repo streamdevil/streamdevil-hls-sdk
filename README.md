@@ -30,6 +30,7 @@ hls.attachMedia(videoElement);
 - [Native HTML5 player](https://streamdevil.github.io/streamdevil-hls-sdk/examples/native-html5-player-simple.html) ([source](https://github.com/streamdevil/streamdevil-hls-sdk/blob/master/examples/native-html5-player-simple.html))
 - [Native HTML5 player - with resolution dropdown](https://streamdevil.github.io/streamdevil-hls-sdk/examples/native-html5-player-with-res-select.html) ([source](https://github.com/streamdevil/streamdevil-hls-sdk/blob/master/examples/native-html5-player-with-res-select.html))
 - [Native HTML5 player - with debug info](https://streamdevil.github.io/streamdevil-hls-sdk/examples/native-html5-player-debug.html) ([source](https://github.com/streamdevil/streamdevil-hls-sdk/blob/master/examples/native-html5-player-debug.html))
+- [VideoJS player - with debug info](https://streamdevil.github.io/streamdevil-hls-sdk/examples/native-videojs-player-debug.html) ([source](https://github.com/streamdevil/streamdevil-hls-sdk/blob/master/examples/native-videojs-player-debug.html))
 
 ## StreamDevilHlsSdk Dashboard
 
