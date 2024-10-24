@@ -18,7 +18,6 @@
     </script>
     <script type="module">
         import { StreamDevilHlsSdk } from "streamdevil-hls-sdk";
-        //import videojs from "video.js";
 
         const statsElement = document.querySelector("#stats");
         const peerLogElement = document.querySelector("#peerLog");
@@ -72,7 +71,7 @@
 </head>
 <body>
 <div style="width: 800px">
-    <video class="video-js" muted autoplay controls width="600" id="video"></video>
+    <video class="video-js vjs-live vjs-liveui" muted autoplay controls width="600" id="video"></video>
     <p>
     <a href="" target="_blank">Open New Peer</a>
     <div id="stats"></div>
